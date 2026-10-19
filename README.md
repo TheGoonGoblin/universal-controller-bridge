@@ -1,11 +1,25 @@
 # universal-controller-bridge
 Open-source controller bridge research for PS5 homebrew
 
+## v0.2 development progress
+
+New: an optional **host libusb diagnostic**, an upstream-shaped PS5X360 sample
+adapter, descriptor filters, and report sessions with disconnect timeouts.
+These are tested development components, not a completed v0.2 PS5 release.
+
+[Build and try USB diagnostics on your Mac](docs/usb-diagnostics.md) ·
+[PS5X360 integration boundary and remaining work](docs/ps5x360-integration.md)
+
+The updated suite passes 3/3 CTest targets when USB tests are enabled: the
+original 1,311,321 checks, 556 integration checks and 12 simulated USB scenarios.
+The real USB executable links here but cannot initialize USB in this container.
+Physical USB reads, PS5 operation and Apple Silicon remain unverified.
+
 ## Universal Controller Bridge v0.1
 
 Portable C++17 decoder and semantic controller mapping for a common original
 Microsoft wired Xbox 360 USB input report. MIT licensed. PS5/etaHEN integration
-is research-stage: this release does not access USB, create a virtual DualSense,
+is research-stage: the v0.1 baseline does not access USB, create a virtual DualSense,
 run a background service, or install on a PS5.
 
 ### Build and test

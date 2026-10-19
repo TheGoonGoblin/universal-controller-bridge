@@ -1,5 +1,22 @@
 # PS5 research — Phase 1
 
+## Phase 2 follow-up
+
+The optional host USB diagnostic and sample adapter are now implemented; see
+[USB diagnostic validation](usb-diagnostics.md) and
+[emulator integration boundary](ps5x360-integration.md). They do not complete
+the PS5 backend discussed below.
+
+Further source searches found PS4 USB declarations in
+[OpenOrbis Usbd.h](https://github.com/OpenOrbis/OpenOrbis-PS4-Toolchain/blob/HEAD/include/orbis/Usbd.h)
+and [ps4sdk usbd.h](https://github.com/ps4dev/ps4sdk/blob/HEAD/include/sce/usbd.h).
+The inspected blobs (a5125bd507399dde2ec2bb7e5efe96bff1a6cdd3 and
+e6fbce607d0f1754b7583e2241b3de8be3966b5a) even disagree on the argument count
+for sceUsbdFreeDeviceList. Neither establishes the PS5 13.60 ABI. Consequently
+no guessed sceUsbd wrapper was added. The ps5-payload-dev/pacbrew-repo root
+listing had no USB-named package; this limited search is not proof that a usable
+PS5 backend cannot exist. etaHEN/etaHEN-SDK also returned 404 in this follow-up.
+
 Inspected 2026-10-19 UTC. Findings are source observations, not console tests.
 User-reported firmware: 13.60. Nothing here independently validates that setup.
 

@@ -40,8 +40,17 @@ timeout; malformed reports alone must not be interpreted as releases.
   timestamps, timeout neutralization, and clean shutdown/reconnect.
 - Settings: later, remapping, calibration, status and player assignment.
 
-No USB backend, IPC protocol, emulator patch, daemon or GUI is shipped.
+No PS5 USB backend, IPC protocol, emulator patch, daemon or GUI is shipped.
 Guide→PS is semantic only; the current PS5X360 button table has no Guide mapping.
 Future emulator integration must choose a deliberate guide/UI policy and respect
 UI capture, guest connection status, profiles, keystrokes and rumble capabilities.
+
+## v0.2 development components
+
+An optional host libusb diagnostic now implements descriptor-based interface
+selection and bounded reads. ReportSession publishes decoded reports to one
+explicit non-native slot and clears disconnected/stale inputs. The templated
+PS5X360 sample adapter implements that emulator's native bit conventions rather
+than treating the generic PlayStation mapping as a ScePad report. See
+[diagnostics](usb-diagnostics.md) and [integration](ps5x360-integration.md).
 
