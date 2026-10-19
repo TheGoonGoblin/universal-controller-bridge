@@ -1,0 +1,8 @@
+SDK v0.44 complete corresponding source:
+https://github.com/ps5-payload-dev/sdk/archive/refs/tags/v0.44.zip
+
+LLVM 18.1.8 runtimes source:
+https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/llvm-project-18.1.8.src.tar.xz
+
+UCB app source is included in source/. Build with tools/build-ps5-app.sh.
+The original source files retain their licenses. The combined binary is GPLv3+.

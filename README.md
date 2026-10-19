@@ -1,6 +1,17 @@
 # universal-controller-bridge
 Open-source controller bridge research for PS5 homebrew
 
+## Native settings app: experimental ELF available
+
+The PS5-targeted settings application now cross-compiles: native overview,
+dead-zone/player preferences, mapping screen and Sony pad input test.
+**Console execution is untested; Xbox bridging and home-screen installation
+are not implemented.** See [native app build and launch instructions](docs/native-app.md).
+
+Download [UCB Settings Experimental](downloads/UCB_Settings_Experimental.zip).
+It contains the ELF, instructions, licenses, application source and exact SDK
+source download references. It is not a PKG or PPSA home-screen app.
+
 ## v0.2 development progress
 
 New: an optional **host libusb diagnostic**, an upstream-shaped PS5X360 sample
