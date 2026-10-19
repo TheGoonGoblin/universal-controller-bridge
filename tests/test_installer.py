@@ -63,6 +63,14 @@ with tempfile.TemporaryDirectory() as temp:
             try:m.plan(local)
             except ValueError:pass
             else:raise AssertionError('Corrupt local file should fail')
+            (local/'eboot.bin').write_bytes(b'UPDATED TEST FIXTURE');manifest()
+            good=json.loads((local/'MANIFEST.json').read_text())
+            for bad in ['../outside','/absolute','sce_sys//param.json','./eboot.bin','line\r\nbreak','back\\slash']:
+                altered=dict(good);altered[bad]='0'*64
+                (local/'MANIFEST.json').write_text(json.dumps(altered))
+                try:m.plan(local)
+                except ValueError:pass
+                else:raise AssertionError('Unsafe manifest path should fail: '+repr(bad))
     finally:
         server.close_all();thread.join(timeout=2)
 print('Installer: local FTP install, checksums, update backup, rollback, collision and corruption checks passed')

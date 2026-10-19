@@ -9,6 +9,7 @@
 #include <array>
 #include <cstdio>
 #include <cstring>
+#include <xmmintrin.h>
 extern "C" {
 int sceSystemServiceHideSplashScreen();
 int sceKernelAllocateMainDirectMemory(size_t,size_t,int,intptr_t*);
@@ -63,9 +64,11 @@ struct Display {
     auto* dest=static_cast<uint32_t*>(buffers[frame%2].data);
     for(uint32_t y=0;y<1080;++y)for(uint32_t x=0;x<1920;++x)
       dest[ucb::ps5::tile_pixel(x,y,1920)]=canvas.pixels[size_t(y)*1920+x];
+    // Finish CPU writes to write-combined display memory before queuing a flip.
+    _mm_sfence();
     if(sceVideoOutSubmitFlip(handle,int(frame%2),1,frame))return false;
     struct kevent event{};int count=0;unsigned timeout=1000000;
-    return sceKernelWaitEqueue(queue,&event,1,&count,&timeout)==0;
+    return sceKernelWaitEqueue(queue,&event,1,&count,&timeout)==0 && count>0;
   }
 };
 }
@@ -78,7 +81,7 @@ int main() {
   const char* config="/data/ucb/settings.conf";
   if(ucb::app::load(config,model.settings))model.message="SAVED SETTINGS LOADED";
   sceUserServiceInitialize(nullptr);scePadInit();int pad=-1;
-  uint32_t previous=0,frame=0;
+  uint32_t previous=0,frame=0;int result=0;
   while(true) {
     if(pad<0 && frame%60==0){std::array<int32_t,4> users{{-1,-1,-1,-1}};
       if(sceUserServiceGetLoginUserIdList(users.data())>=0)for(int32_t id:users)if(id>=0){pad=scePadOpen(id,0,0,nullptr);if(pad>=0)break;}}
@@ -96,9 +99,9 @@ int main() {
     if(model.tab==1){if(pressed&0x10)model.row=(model.row+2)%3;if(pressed&0x40)model.row=(model.row+1)%3;
       if(pressed&0x80)model.change(-1);if(pressed&0x20)model.change(1);}
     if(pressed&0x4000)model.message=ucb::app::save(config,model.settings)?"SETTINGS SAVED":"SAVE FAILED - DATA DIRECTORY UNAVAILABLE";
-    canvas.draw(model);if(!display.present(canvas,frame++)){std::puts("UCB: display flip failed");break;}
+    canvas.draw(model);if(!display.present(canvas,frame++)){std::puts("UCB: display flip failed");result=1;break;}
     usleep(16000);
   }
   if(pad>=0)scePadClose(pad);
-  return 0;
+  return result;
 }

@@ -20,12 +20,17 @@ def plan(app):
     marker=json.loads((app/'ucb-install.json').read_text())
     require(marker=={'owner':OWNER,'titleId':TITLE},'Invalid UCB installation marker')
     param=json.loads((app/'sce_sys/param.json').read_text())
+    require(isinstance(param,dict),'Invalid title metadata')
     require(param['titleId']==TITLE,'Wrong title ID')
     manifest=json.loads((app/'MANIFEST.json').read_text())
+    require(isinstance(manifest,dict),'Invalid manifest')
     files=[]
     for name,expected in sorted(manifest.items()):
+        require(isinstance(name,str) and isinstance(expected,str),'Invalid manifest entry')
         path=PurePosixPath(name)
-        require(name and not path.is_absolute() and '..' not in path.parts,'Unsafe manifest path')
+        require(name and not path.is_absolute() and '..' not in path.parts and
+                path.as_posix()==name and not any(c in name for c in ('\r','\n','\x00','\\')),
+                'Unsafe manifest path')
         local=app.joinpath(*path.parts)
         require(local.is_file() and not local.is_symlink(),'Missing or symlinked input')
         require(hashlib.sha256(local.read_bytes()).hexdigest()==expected,'Local checksum mismatch: '+name)
@@ -96,7 +101,7 @@ def main():
         return
     host=args.host or input('PS5 IPv4 address: ').strip()
     ipaddress.IPv4Address(host)
-    port=args.port or int(input('PS5 FTP port [1337]: ').strip() or '1337')
+    port=args.port if args.port is not None else int(input('PS5 FTP port [1337]: ').strip() or '1337')
     if not 1<=port<=65535:raise ValueError('Invalid FTP port')
     password='anonymous@' if args.user=='anonymous' else getpass.getpass('FTP password: ')
     print('Connecting only to',host,'port',port)
@@ -106,6 +111,6 @@ def main():
 
 if __name__=='__main__':
     try:main()
-    except (OSError,ValueError,KeyError,AssertionError,RuntimeError,ftplib.Error) as e:
+    except (OSError,ValueError,KeyError,AssertionError,RuntimeError,ftplib.Error,EOFError) as e:
         print('Installation stopped:',e)
         raise SystemExit(1)

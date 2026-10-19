@@ -3,6 +3,9 @@ Open-source controller bridge research for PS5 homebrew
 
 ## Home-screen preview: new download
 
+Maintenance fixes add atomic settings saves, strict damaged-config handling,
+framebuffer write ordering and installer validation. See [bug fixes](docs/bugfixes.md).
+
 The prebuilt `UCB_PS5_HomeScreen_Preview.zip` is supplied with the ChatGPT handoff.
 Follow [START HERE](docs/home-screen-install.md), or reproduce the ZIP using
 `tools/build-ps5-title.sh` and `tools/package-home-screen.py`. The ZIP includes the
