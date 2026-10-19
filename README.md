@@ -5,7 +5,7 @@ Open-source controller bridge research for PS5 homebrew
 
 A separate [experimental USB probe](docs/ps5-usb-probe.md) now cross-compiles
 for PS5. It attempts real interrupt input reads from the original Microsoft
-wired controller and writes `/data/ucb/usb-probe.log`. It does not yet feed
+wired controller and writes `/data/ucb-usb-probe-v2.log`. It does not yet feed
 emulators. Hardware testing is pending; keep the installed settings app.
 
 ## Home-screen preview: new download

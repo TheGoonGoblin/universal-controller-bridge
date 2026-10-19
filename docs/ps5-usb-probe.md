@@ -15,7 +15,7 @@ with the Sony pad shown connected. Xbox input is still absent from that app.
    `eboot.bin`, and do not register another home-screen title.
 4. During the next 60 seconds, move both sticks and press buttons/triggers.
    Back + Start together ends the read test early. There is no on-screen UI.
-5. Download `/data/ucb/usb-probe.log` through PS5 Upload. A log with INPUT lines
+5. Download `/data/ucb-usb-probe-v2.log` through PS5 Upload. A log with INPUT lines
    proves USB reports reached the decoder; it does not prove emulator support.
 
 The payload does not request a restart or change the jailbreak, firmware,
@@ -80,3 +80,36 @@ The optional virtual-pad path described by FGG-XSense is a new research lead,
 not established UCB functionality. Player 2/user assignment and compatibility
 with PS5X360 remain untested. Do not use a hardcoded user ID as a substitute
 for verified player assignment.
+
+## Log access fix
+
+The initial probe used the native settings app's private `/data/ucb` directory.
+The user reported PS5 Upload failing directory listing with errno 13. The
+probe now uses `/data/ucb-usb-probe-v2.log` and explicitly sets mode 0644. It
+leaves the private settings directory and all saved preferences untouched.
+
+## Startup diagnostics revision 2
+
+The installed revision 1 ELF was downloaded from the console and matched the
+corrected local binary byte-for-byte (SHA256
+9e8b10a373ff75d80faecafeb3bda18883c4f166fe0a16c1d4595f206a571d98),
+but no log was visible. That does not establish USB failure: startup could fail
+before opening its log. The unrelated PPSA50011 permissions error is excluded.
+
+Revision 2 opens an append log before locking, reports lock-open and lock-acquire
+errors with errno, and announces startup, log access, scanning and completion
+through stderr and experimental PS5 notifications. The notification request
+layout follows FGG-XSense's cited log.c; notification delivery is unverified on
+13.60. Notifications cannot diagnose a failure before main is reached.
+
+The primary log is `/data/ucb-usb-probe-v2.log`. If it cannot open that file,
+it tries `/data/pldmgr/payloads/local/ucb-usb-probe/usb-probe-v2.log`.
+No folder permissions are changed. A first log-open failure is announced even
+if the fallback succeeds. Logs include PID/UID/EUID. Close UCB and games before
+testing. Run once with the controller already connected and record the
+notification text. No need to press buttons for 60 seconds if it reports an
+immediate failure. Do not restart just to troubleshoot this payload.
+
+Validation for revision 2: PS5 SDK v0.44 cross-build with LLVM 18.1.3 and warnings
+as errors passed; 1,311,321 decoder and 65,825 descriptor host checks passed.
+The notification call and device access still require console validation.

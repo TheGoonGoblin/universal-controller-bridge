@@ -71,3 +71,6 @@ Testing/
 __pycache__/
 *.py[cod]
 
+
+# Reproducible local SDK/compiler cache
+.toolchain/
