@@ -91,8 +91,8 @@ int main() {
       model.lx=data[4];model.ly=data[5];model.rx=data[6];model.ry=data[7];model.l2=data[8];model.r2=data[9];}
     const uint32_t pressed=model.buttons&~previous;previous=model.buttons;
     if(pressed&0x2000)break;
-    if(pressed&0x400)model.tab=(model.tab+3)%4;
-    if(pressed&0x800)model.tab=(model.tab+1)%4;
+    if(pressed&0x400)model.tab=(model.tab+4)%5;
+    if(pressed&0x800)model.tab=(model.tab+1)%5;
     if(model.tab==1){if(pressed&0x10)model.row=(model.row+2)%3;if(pressed&0x40)model.row=(model.row+1)%3;
       if(pressed&0x80)model.change(-1);if(pressed&0x20)model.change(1);}
     if(pressed&0x4000)model.message=ucb::app::save(config,model.settings)?"SETTINGS SAVED":"SAVE FAILED - DATA DIRECTORY UNAVAILABLE";

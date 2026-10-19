@@ -5,7 +5,7 @@
 | 0.1 | Portable wired Xbox 360 decoder, mappings, tests | Implemented and host-tested |
 | 0.2 | PS5 USB detection and PS5X360 integration | Host USB diagnostic and sample adapter implemented; PS5 backend/integration pending |
 | 0.3 | Background service | Conditional on permissions and lifetime tests |
-| 0.4 | PS5 settings interface | Planned |
+| 0.4 | PS5 settings interface | Native interface and title candidate built; console behavior unverified |
 | 0.5 | More USB controllers and Bluetooth research | Planned |
 | 1.0 | Stable support for compatible homebrew emulators | Long-term goal |
 

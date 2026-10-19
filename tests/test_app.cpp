@@ -20,7 +20,7 @@ int main() {
   check(!load(path,loaded) && loaded.left==23);
   f=std::fopen(path,"w");std::fputs("UCB1 1 1 2 trailing",f);std::fclose(f);check(!load(path,loaded));
   std::remove(path);
-  for(int tab=0;tab<4;++tab){m.tab=tab;Canvas c;c.draw(m);check(c.pixels.size()==1920u*1080u);check(c.pixels[0]!=c.pixels.back());}
+  for(int tab=0;tab<5;++tab){m.tab=tab;Canvas c;c.draw(m);check(c.pixels.size()==1920u*1080u);check(c.pixels[0]!=c.pixels.back());}
   // Every visible pixel must map to a unique, in-bounds tiled video address.
   std::vector<bool> seen(0x2000000/4,false);
   for(uint32_t y=0;y<1080;++y)for(uint32_t x=0;x<1920;++x){auto p=ucb::ps5::tile_pixel(x,y,1920);check(p<seen.size());check(!seen[p]);seen[p]=true;}

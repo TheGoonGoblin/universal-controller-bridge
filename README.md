@@ -1,6 +1,18 @@
 # universal-controller-bridge
 Open-source controller bridge research for PS5 homebrew
 
+## Home-screen preview: new download
+
+The prebuilt `UCB_PS5_HomeScreen_Preview.zip` is supplied with the ChatGPT handoff.
+Follow [START HERE](docs/home-screen-install.md), or reproduce the ZIP using
+`tools/build-ps5-title.sh` and `tools/package-home-screen.py`. The ZIP includes the
+PPSA73001 native title folder, generated runtime, home-screen artwork, polished
+five-tab interface and optional Mac FTP installer with checksum verification.
+
+**Native packaging passes host validation, but console launch and Xbox bridging
+remain untested/unfinished.** This is a settings preview, not working controller
+compatibility. The earlier ELF-only download below remains an older build.
+
 ## Native settings app: experimental ELF available
 
 The PS5-targeted settings application now cross-compiles: native overview,

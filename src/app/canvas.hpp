@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "settings.hpp"
+#include "ui_assets.hpp"
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -44,18 +46,33 @@ struct Canvas {
   }
   void text(int x,int y,const char* s,int scale,uint32_t color) {
     for(;*s;++s,x+=6*scale) {
-      const char* g=glyph(*s);
-      for(int j=0;j<7;++j)for(int i=0;i<5;++i)if(g[j*5+i]=='1')rect(x+i*scale,y+j*scale,scale,scale,color);
+      const unsigned ch=static_cast<unsigned char>(*s);
+      if(ch<32||ch>=96)continue;
+      for(int j=0;j<8*scale;++j)for(int i=0;i<6*scale;++i) {
+        const unsigned a=assets::font[(ch-32)*768+size_t(j*4/scale)*24+size_t(i*4/scale)];
+        if(!a||x+i<0||y+j<0||x+i>=width||y+j>=height)continue;
+        auto& old=pixels[size_t(y+j)*width+size_t(x+i)];uint32_t next=0xff000000;
+        for(unsigned shift:{0u,8u,16u})next|=((((old>>shift)&255)*(255-a)+((color>>shift)&255)*a+127)/255)<<shift;
+        old=next;
+      }
     }
+  }
+  void circle(int x,int y,int radius,uint32_t color) {
+    for(int j=-radius;j<=radius;++j){int span=int(std::sqrt(double(radius*radius-j*j)));rect(x-span,y+j,2*span+1,1,color);}
+  }
+  void rounded(int x,int y,int w,int h,int r,uint32_t color) {
+    rect(x+r,y,w-2*r,h,color);rect(x,y+r,w,h-2*r,color);
+    for(int j=0;j<r;++j){int inset=r-int(std::sqrt(double(r*r-(r-j)*(r-j))));rect(x+inset,y+j,w-2*inset,1,color);rect(x+inset,y+h-1-j,w-2*inset,1,color);}
   }
   void draw(const Model& m) {
     const auto ink=rgb(230,238,251), muted=rgb(134,155,184), blue=rgb(69,164,255), green=rgb(87,226,179), amber=rgb(246,188,93);
     for(int y=0;y<height;++y)rect(0,y,width,1,rgb(10+unsigned(y)/120,17+unsigned(y)/100,31+unsigned(y)/90));
-    rect(0,0,1920,7,blue);rect(48,48,94,94,blue);text(68,76,"UC",6,rgb(10,24,45));
-    text(175,57,"UNIVERSAL CONTROLLER BRIDGE",6,ink);text(177,116,"PS5 NATIVE SETTINGS - EXPERIMENTAL 0.3",3,muted);
-    const char* tabs[]{"OVERVIEW","SETTINGS","MAPPING","INPUT TEST"};
-    for(int i=0;i<4;++i){rect(48,216+i*112,350,84,i==m.tab?rgb(27,77,121):rgb(18,30,48));text(76,244+i*112,tabs[i],4,i==m.tab?ink:muted);}
-    rect(438,216,1434,704,rgb(20,34,54));
+    rect(0,0,1920,4,blue);
+    for(int y=0;y<96;++y)for(int x=0;x<96;++x)pixels[size_t(y+48)*width+size_t(x+48)]=assets::icon[size_t(y)*96+size_t(x)];
+    text(175,57,"UNIVERSAL CONTROLLER BRIDGE",6,ink);text(177,116,"NATIVE SETTINGS - EXPERIMENTAL PREVIEW",3,muted);
+    const char* tabs[]{"OVERVIEW","SETTINGS","MAPPING","INPUT TEST","ABOUT"};
+    for(int i=0;i<5;++i){rounded(48,216+i*106,350,80,14,i==m.tab?rgb(27,77,121):rgb(18,30,48));text(76,240+i*106,tabs[i],4,i==m.tab?ink:muted);if(i==m.tab)rect(48,240+i*106,4,32,blue);}
+    rounded(438,224,1434,704,20,rgb(6,13,25));rounded(438,216,1434,704,20,rgb(20,34,54));
     text(484,260,tabs[m.tab],6,ink);
     if(m.tab==0) {
       text(484,354,"PLAYER 1 - SONY NATIVE PAD",4,ink);
@@ -68,7 +85,7 @@ struct Canvas {
       const char* labels[]{"LEFT STICK DEAD ZONE","RIGHT STICK DEAD ZONE","XBOX PLAYER SLOT"};
       int values[]{m.settings.left,m.settings.right,m.settings.player};char value[32];
       for(int i=0;i<3;++i) {
-        const int y=354+i*130;rect(470,y-20,1376,102,i==m.row?rgb(31,68,103):rgb(24,42,64));
+        const int y=354+i*130;rounded(470,y-20,1376,102,14,i==m.row?rgb(31,68,103):rgb(24,42,64));
         text(494,y,labels[i],4,ink);std::snprintf(value,sizeof(value),i==2?"%d":"%d %%",values[i]);text(1510,y,value,5,blue);
         if(i<2){rect(494,y+46,750,6,rgb(48,66,87));rect(494,y+46,values[i]*750/90,6,blue);}
       }
@@ -80,12 +97,25 @@ struct Canvas {
         "BACK  -  TOUCHPAD FOR PS5X360","GUIDE  -  NO CURRENT GUEST MAPPING"};
       for(int i=0;i<6;++i)text(484,354+i*76,lines[i],3,i==5?amber:ink);
       text(484,844,"FIXED PROFILE - CUSTOM REMAPPING PLANNED",3,muted);
-    } else {
+    } else if(m.tab==3) {
       char buf[100];std::snprintf(buf,sizeof(buf),"NATIVE PAD BUTTON MASK: %u",m.buttons);text(484,354,buf,4,ink);
       const char* labels[]{"LX","LY","RX","RY","L2","R2"};int values[]{m.lx,m.ly,m.rx,m.ry,m.l2,m.r2};
       for(int i=0;i<6;++i){int y=440+i*58;text(484,y,labels[i],3,muted);rect(580,y,920,20,rgb(39,56,77));rect(580,y,values[i]*920/255,20,blue);std::snprintf(buf,sizeof(buf),"%d",values[i]);text(1550,y,buf,3,ink);}
       text(484,844,"LIVE SONY PAD INPUT - XBOX REQUIRES USB BACKEND",3,muted);
+    } else {
+      const char* lines[]{"UNIVERSAL CONTROLLER BRIDGE","COPYRIGHT 2026 THEGOONGOBLIN",
+        "UCB SOURCE: MIT LICENSE","TITLE RUNTIME: GPL-3.0-OR-LATER",
+        "NO WARRANTY. REDISTRIBUTION PERMITTED UNDER GPL.",
+        "FULL NOTICES: LICENSES FOLDER IN THE DOWNLOAD",
+        "EXPERIMENTAL BUILD - CONSOLE TEST REQUIRED"};
+      for(int i=0;i<7;++i)text(484,354+i*64,lines[i],3,i==6?amber:ink);
     }
+    // Stylized live native-pad indicator, not an Xbox detection claim.
+    rounded(98,808,248,88,30,rgb(35,60,84));circle(122,870,38,rgb(35,60,84));circle(322,870,38,rgb(35,60,84));
+    circle(172,862,20,rgb(9,24,39));circle(268,862,20,rgb(9,24,39));
+    circle(172+(int(m.lx)-128)/13,862+(int(m.ly)-128)/13,9,blue);
+    circle(268+(int(m.rx)-128)/13,862+(int(m.ry)-128)/13,9,blue);
+    circle(325,828,7,(m.buttons&0x4000)?green:muted);
     text(48,962,"L1/R1 TABS     CROSS SAVE     CIRCLE EXIT",3,ink);
     text(48,1014,m.message,3,muted);
   }

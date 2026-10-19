@@ -1,5 +1,10 @@
 # UCB native settings application — experimental build
 
+**Newer packaging:** [home-screen preview and installation](home-screen-install.md)
+now provides a converted native title folder and optional verified FTP transfer.
+This page retains the earlier ELF-payload launch instructions. Neither build has
+been executed on a PS5 here; Xbox bridging remains unfinished.
+
 The native application now cross-compiles to `ucb-settings.elf` using
 ps5-payload-dev SDK v0.44 and Clang/LLD 18.1.3. This is a real PS5-targeted ELF
 payload with native display and controller calls, not a renamed host executable.
