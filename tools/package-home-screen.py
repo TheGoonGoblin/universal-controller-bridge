@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: MIT
-"""Package only the validated native title, installer, notices and source."""
+"""Make an install ZIP with exactly one top-level PPSA folder."""
 from pathlib import Path
 import hashlib
 import json
 import shutil
-import subprocess
 import zipfile
 
 root=Path(__file__).resolve().parents[1]
@@ -17,7 +16,20 @@ param=json.loads((app/'sce_sys/param.json').read_text())
 assert param['titleId']=='PPSA73001' and len(param['contentId'].split('-')[-1])==16
 (app/'ucb-install.json').write_text(json.dumps({'owner':'TheGoonGoblin/universal-controller-bridge','titleId':'PPSA73001'})+'\n')
 shutil.copyfile(root/'README.md',app/'README.md')
-source_links=(root/'downloads/SOURCE_LINKS.txt').read_text()+'\nNative title tool source, vendored in source/third_party/native-title:\nhttps://github.com/mihawk-99/PS5_Vulkan/tree/f410e67a0241b3e8edcdbcd2a9b285dfc4a412ed/tooling/native\n'
+source_links='''Complete corresponding source for this native binary:
+UCB application, build scripts and vendored native-title tooling:
+https://github.com/TheGoonGoblin/universal-controller-bridge/archive/3e817304dc8ec4e00b1f841bdb05c71ffe8ec7fe.zip
+
+PS5 payload SDK v0.44 runtime source:
+https://github.com/ps5-payload-dev/sdk/archive/refs/tags/v0.44.zip
+
+LLVM 18.1.8 C++ runtime source:
+https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/llvm-project-18.1.8.src.tar.xz
+
+The install ZIP contains only the title folder. Source remains available at
+the copying facilities above. Original files retain their licenses; the
+combined binary is GPLv3-or-later. License texts are in the licenses folder.
+'''
 (app/'SOURCE_LINKS.txt').write_text(source_links)
 for name in ['pic0.png','pic1.png']:
     if (root/'assets/brand'/name).is_file():shutil.copyfile(root/'assets/brand'/name,app/'sce_sys'/name)
@@ -25,19 +37,12 @@ for name in ['pic0.png','pic1.png']:
 manifest={p.relative_to(app).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(app.rglob('*')) if p.is_file() and p.name!='MANIFEST.json'}
 (app/'MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
 out=root/'downloads/UCB_PS5_HomeScreen_Preview.zip'
-paths=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard'],cwd=root,text=True).splitlines()
 with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     for p in sorted(app.rglob('*')):
         if p.is_file():z.write(p,'PPSA73001/'+p.relative_to(app).as_posix())
-    for name in ['Install_UCB.command','install_ucb.py']:
-        info=zipfile.ZipInfo(name);info.external_attr=(0o100755<<16);info.compress_type=zipfile.ZIP_DEFLATED
-        z.writestr(info,(root/'tools'/name).read_bytes())
-    z.write(root/'docs/home-screen-install.md','START_HERE.md')
-    z.writestr('SOURCE_LINKS.txt',source_links)
-    for name in paths:
-        if name.startswith('downloads/') or '__pycache__' in name:continue
-        z.write(root/name,'source/'+name)
-with zipfile.ZipFile(out) as z:assert z.testzip() is None
+with zipfile.ZipFile(out) as z:
+    assert z.testzip() is None
+    assert {name.split('/')[0] for name in z.namelist()}=={'PPSA73001'}
 digests=[]
 for p in sorted((root/'downloads').glob('*.zip')):digests.append(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name)
 (root/'downloads/SHA256SUMS.txt').write_text('\n'.join(digests)+'\n')

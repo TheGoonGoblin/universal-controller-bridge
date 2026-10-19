@@ -16,33 +16,10 @@ Installing the settings preview does not make an Xbox controller work in games.
 4. Launch it and check that its screen appears. L1/R1 switches tabs; Circle exits.
 
 Do not nest the folder twice, and do not copy only eboot.bin. If PPSA73001 already
-belongs to a different app on your console, do not overwrite it: the included
-FTP installer checks UCB's ownership marker and refuses that collision.
-Registration and exact PS5 Upload UI vary by installed tools; no unsupported
-automatic registration command is included.
-
-## Optional Mac installer
-
-The ZIP also contains `Install_UCB.command` and `install_ucb.py`. With Python 3
-available, double-click the command file and enter your PS5's IPv4 address and
-FTP port. etaHEN's documented default is 1337; use the actual port enabled on
-your setup. This connects only to the console address you provide.
-
-If macOS blocks the unsigned command file, use the PS5 Upload folder-copy path,
-or inspect the script and run `bash Install_UCB.command` in Terminal from the
-extracted download folder. This is an unsigned development build, not an App
-Store installer. Python and FTP do not need to be installed on the PS5.
-
-The installer checks local hashes, uploads into a separate staging directory,
-downloads each file to verify its SHA-256, then renames the verified folder into
-place. Updates of an owned UCB folder retain its previous files in
-`/data/ucb-backup-...`; a failed final rename attempts rollback. No unrelated
-title is overwritten and no remote files are deleted. Keep enough free space
-for the staged copy and backup. Config preferences live separately in /data/ucb.
-
-It does not enable etaHEN, change firmware, modify emulators or claim that a
-successful FTP transfer proves the program ran. Allow your normal title
-registration after transfer.
+belongs to a different app on your console, do not overwrite it.
+The install ZIP contains only PPSA73001. Source and optional developer/FTP tools
+are kept separately in the GitHub repository; they are not needed for the
+folder-copy installation.
 
 ## First hardware test
 

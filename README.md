@@ -9,8 +9,9 @@ framebuffer write ordering and installer validation. See [bug fixes](docs/bugfix
 The prebuilt `UCB_PS5_HomeScreen_Preview.zip` is supplied with the ChatGPT handoff.
 Follow [START HERE](docs/home-screen-install.md), or reproduce the ZIP using
 `tools/build-ps5-title.sh` and `tools/package-home-screen.py`. The ZIP includes the
-PPSA73001 native title folder, generated runtime, home-screen artwork, polished
-five-tab interface and optional Mac FTP installer with checksum verification.
+PPSA73001 native title folder with its runtime, artwork and five-tab interface.
+The install ZIP has no extra top-level source folder or installer scripts.
+Source and the optional FTP installer remain available in this repository.
 
 **Native packaging passes host validation, but console launch and Xbox bridging
 remain untested/unfinished.** This is a settings preview, not working controller
