@@ -1,3 +1,11 @@
+## Updated USB research: console probe available
+
+See [the PS5 USB probe](ps5-usb-probe.md) for the newly examined USB_FS
+implementation, source revision, limitations and hardware test procedure.
+Earlier absence-of-evidence statements below reflect the previous investigation.
+The native settings app has now launched on the user's PS5; USB operation and
+virtual controller integration remain unverified.
+
 # PS5 research — Phase 1
 
 ## Phase 2 follow-up

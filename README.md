@@ -1,6 +1,13 @@
 # universal-controller-bridge
 Open-source controller bridge research for PS5 homebrew
 
+## Xbox 360 USB hardware test
+
+A separate [experimental USB probe](docs/ps5-usb-probe.md) now cross-compiles
+for PS5. It attempts real interrupt input reads from the original Microsoft
+wired controller and writes `/data/ucb/usb-probe.log`. It does not yet feed
+emulators. Hardware testing is pending; keep the installed settings app.
+
 ## Home-screen preview: new download
 
 Maintenance fixes add atomic settings saves, strict damaged-config handling,
@@ -13,8 +20,8 @@ PPSA73001 native title folder with its runtime, artwork and five-tab interface.
 The install ZIP has no extra top-level source folder or installer scripts.
 Source and the optional FTP installer remain available in this repository.
 
-**Native packaging passes host validation, but console launch and Xbox bridging
-remain untested/unfinished.** This is a settings preview, not working controller
+**The user has now confirmed the settings preview launches on PS5 13.60 and
+shows a connected Sony pad. Xbox USB and emulator bridging remain unfinished.** This is a settings preview, not working controller
 compatibility. The earlier ELF-only download below remains an older build.
 
 ## Native settings app: experimental ELF available
